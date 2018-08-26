@@ -1,3 +1,1 @@
 # Clients
-
-## Java Client

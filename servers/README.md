@@ -1,3 +1,1 @@
 # Servers
-
-## Java Server
