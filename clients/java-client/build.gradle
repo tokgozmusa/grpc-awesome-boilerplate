@@ -8,33 +8,46 @@ buildscript {
 }
 
 plugins {
-    id "com.google.protobuf" version "0.8.6"
     id "java"
+    id "com.google.protobuf" version "0.8.6"
     id "application"
     id "idea"
     id 'com.github.ben-manes.versions' version '0.19.0'
 }
 
-version '1.0-SNAPSHOT'
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
 
+def grpcVersion = '1.15.0'
+def protobufVersion = '3.6.1'
+def protocVersion = '3.6.1'
 def protoFilesDir = "$projectDir/../../proto-files"
-def protoSrcPath = "$projectDir/src/generatedProtoSrc"
 
-sourceSets {
-    main {
-        proto {
-            srcDir protoFilesDir
-        }
-    }
+
+dependencies {
+    // investigate redundant ones
+    implementation "com.google.api.grpc:proto-google-common-protos:1.0.0"
+    implementation "io.grpc:grpc-alts:${grpcVersion}"
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
+    compileOnly "javax.annotation:javax.annotation-api:1.2"
+
+    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
+
+    testImplementation "junit:junit:4.12"
 }
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.6.0"
+        artifact = "com.google.protobuf:protoc:${protocVersion}"
     }
     plugins {
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.4.0'
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
         }
     }
     generateProtoTasks {
@@ -42,27 +55,22 @@ protobuf {
             grpc {}
         }
     }
-    generatedFilesBaseDir = protoSrcPath
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile 'io.grpc:grpc-all:1.12.0'
-}
-
-idea {
-    module {
-        sourceDirs += file("${protoSrcPath}/main/java")
-        sourceDirs += file("${protoSrcPath}/main/grpc")
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+        proto {
+            srcDir protoFilesDir
+        }
     }
 }
+
+startScripts.enabled = false
 
 task runClient(type: JavaExec) {
     println(args)
@@ -70,13 +78,10 @@ task runClient(type: JavaExec) {
     main = 'helloworld.HelloWorldClient'
 }
 
-
-startScripts.enabled = false
-
 task helloWorldClient(type: CreateStartScripts) {
-    mainClassName = "HelloWorldClient"
-    applicationName = "HelloWorld"
-    outputDir = new File(project.buildDir, mainClassName)
+    mainClassName = "helloworld.HelloWorldClient"
+    applicationName = "hello-world-client"
+    outputDir = new File(project.buildDir, 'tmp')
     classpath = jar.outputs.files + project.configurations.runtime
 }
 

@@ -1,8 +1,10 @@
 package helloworld;
 
+import helloworldproto.GreeterGrpc;
+import helloworldproto.HelloRequest;
+import helloworldproto.HelloResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,7 +17,7 @@ public class HelloWorldClient {
   private static final Logger logger = Logger.getLogger(HelloWorldClient.class.getName());
 
   private final ManagedChannel channel;
-  private HelloWorldGrpc.HelloWorldBlockingStub blockingStub;
+  private GreeterGrpc.GreeterBlockingStub blockingStub;
 
   private static String hostName = "localhost";
   private static int port = 42420;
@@ -35,7 +37,7 @@ public class HelloWorldClient {
     channel = ManagedChannelBuilder.forAddress(hostname, port)
         .usePlaintext(true)
         .build();
-    blockingStub = HelloWorldGrpc.newBlockingStub(channel);
+    blockingStub = GreeterGrpc.newBlockingStub(channel);
   }
 
   private void shutdown() throws InterruptedException {

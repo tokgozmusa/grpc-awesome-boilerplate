@@ -1,10 +1,8 @@
 package helloworld;
 
-import helloworld.services.HelloWorldService;
+import helloworld.services.GreeterService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -18,26 +16,25 @@ public class HelloWorldServer {
   private Server server;
 
   public static void main(String[] args) throws Exception {
-    logger.info("Server startup. Args = " + Arrays.toString(args));
     final HelloWorldServer helloWorldServer = new HelloWorldServer();
     helloWorldServer.start();
     helloWorldServer.blockUntilShutdown();
   }
 
   private void start() throws Exception {
-    logger.info("Starting the grpc server");
+    logger.info("Starting the grpc server...");
 
     server = ServerBuilder.forPort(port)
-        .addService(new HelloWorldService())
+        .addService(new GreeterService())
         .build()
         .start();
 
     logger.info("Server started. Listening on port " + port);
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      System.err.println("*** JVM is shutting down. Turning off grpc server as well ***");
+      System.err.println("*** JVM is shutting down. Stopping grpc server as well ***");
       HelloWorldServer.this.stop();
-      System.err.println("*** shutdown complete ***");
+      System.err.println("*** Shutdown complete ***");
     }));
   }
 

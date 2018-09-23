@@ -1,17 +1,16 @@
 package helloworld.services;
 
-import helloworld.HelloRequest;
-import helloworld.HelloResponse;
-import helloworld.HelloWorldGrpc;
 import helloworld.HelloWorldServer;
+import helloworldproto.GreeterGrpc;
+import helloworldproto.HelloRequest;
+import helloworldproto.HelloResponse;
 import io.grpc.stub.StreamObserver;
-
 import java.time.LocalDateTime;
 
 /**
  * User: tokgozmusa Date: 26.08.2018 Time: 01:42
  **/
-public class HelloWorldService extends HelloWorldGrpc.HelloWorldImplBase {
+public class GreeterService extends GreeterGrpc.GreeterImplBase {
 
   @Override
   public void sayHello(HelloRequest helloRequest, StreamObserver<HelloResponse> responseObserver) {
@@ -24,6 +23,9 @@ public class HelloWorldService extends HelloWorldGrpc.HelloWorldImplBase {
   }
 
   private String sayHelloImpl(String name) {
-    return "Hello " + name;
+    if (name == null) {
+      return "Hello there!";
+    }
+    return "Hello " + name + "!";
   }
 }
