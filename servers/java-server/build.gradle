@@ -3,16 +3,15 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.6'
+        classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.6"
     }
 }
 
 plugins {
     id "java"
     id "com.google.protobuf" version "0.8.6"
-    id "application"
     id "idea"
-    id 'com.github.ben-manes.versions' version '0.19.0'
+    id "application"
 }
 
 repositories {
@@ -20,25 +19,19 @@ repositories {
     mavenLocal()
 }
 
-def grpcVersion = '1.15.0'
-def protobufVersion = '3.6.1'
-def protocVersion = '3.6.1'
+def grpcVersion = "1.15.0"
+def protocVersion = "3.6.1"
 def protoFilesDir = "$projectDir/../../proto-files"
 
-
 dependencies {
-    // investigate redundant ones
-    implementation "com.google.api.grpc:proto-google-common-protos:1.0.0"
-    implementation "io.grpc:grpc-alts:${grpcVersion}"
-    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
-    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
-    implementation "io.grpc:grpc-stub:${grpcVersion}"
-    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
-    compileOnly "javax.annotation:javax.annotation-api:1.2"
+    compile "com.google.api.grpc:proto-google-common-protos:1.0.0"
+    compile "io.grpc:grpc-netty:${grpcVersion}"
+    compile "io.grpc:grpc-protobuf:${grpcVersion}"
+    compile "io.grpc:grpc-stub:${grpcVersion}"
 
-    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
-
-    testImplementation "junit:junit:4.12"
+    testCompile "io.grpc:grpc-testing:${grpcVersion}"
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:1.9.5"
 }
 
 protobuf {
@@ -57,12 +50,11 @@ protobuf {
     }
 }
 
-
 sourceSets {
     main {
         java {
-            srcDirs 'build/generated/source/proto/main/grpc'
-            srcDirs 'build/generated/source/proto/main/java'
+            srcDirs "build/generated/source/proto/main/grpc"
+            srcDirs "build/generated/source/proto/main/java"
         }
         proto {
             srcDir protoFilesDir
@@ -72,15 +64,10 @@ sourceSets {
 
 startScripts.enabled = false
 
-task runServer(type: JavaExec) {
-    classpath = sourceSets.main.runtimeClasspath
-    main = 'helloworld.HelloWorldServer'
-}
-
 task helloWorldServer(type: CreateStartScripts) {
     mainClassName = "helloworld.HelloWorldServer"
     applicationName = "hello-world-server"
-    outputDir = new File(project.buildDir, mainClassName)
+    outputDir = new File(project.buildDir, "tmp/${mainClassName}")
     classpath = jar.outputs.files + project.configurations.runtime
 }
 
